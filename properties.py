@@ -5,6 +5,74 @@ Created on Sun Dec  8 17:32:11 2013
 @author: jmcontreras
 """
 
+''''''''''''
+'''utilities'''
+# Define utility class
+class Utility(object):
+    def __init__(self, name, position):
+        self.name = name
+        self.position = position
+        self.price = 150
+        self.price_mortgage = self.price / 2
+        self.rent = 4
+        self.rent_now = self.rent
+        self.rent_monopoly = 10
+        self.mortgage = 0
+        self.owner = None
+
+# Create and fill utilities list
+utils = []
+utils.append(Utility('Electric Company', 12))
+utils.append(Utility('Water Works', 28))
+
+'''railroad'''
+# Define railroad class
+class Railroad(object):
+    def __init__(self, name, position):
+        self.name = name
+        self.position = position
+        self.price = 200
+        self.price_mortgage = self.price / 2
+        self.rent = 25
+        self.rent_now = self.rent
+        self.rent_double = self.rent * 2
+        self.rent_triple = self.rent_double * 2
+        self.rent_monopoly = self.rent_triple * 2
+        self.mortgage = 0
+        self.owner = None
+
+# Create and fill railroads list
+rails = []
+rails.append(Railroad('Reading Railroad', 5))
+rails.append(Railroad('Pennsylvania Railroad', 15))
+rails.append(Railroad('B. & 0. Railroad', 25))
+rails.append(Railroad('Short Line', 35))
+
+'''streets'''
+# Define street class
+class Street(object):
+    def __init__(self, name, position, color, price, rent, rent_build_1,
+                 rent_build_2, rent_build_3, rent_build_4, rent_build_5,
+                 cost_build):
+                     self.name = name
+                     self.position = position
+                     self.color = color
+                     self.price = price
+                     self.price_mortgage = price / 2
+                     self.rent = rent
+                     self.rent_now = rent
+                     self.rent_monopoly = rent * 2
+                     self.rent_build_1 = rent_build_1
+                     self.rent_build_2 = rent_build_2
+                     self.rent_build_3 = rent_build_3
+                     self.rent_build_4 = rent_build_4
+                     self.cost_build_5 = rent_build_5
+                     self.cost_build = cost_build
+                     self.n_building = 0
+                     self.mortgage = 0
+                     self.owner = None
+
+
 # Define street class
 class Street(object):
     def __init__(self, name, position, color, price, rent, rent_build_1,

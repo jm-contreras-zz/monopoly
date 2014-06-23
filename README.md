@@ -1,4 +1,3 @@
 monopoly
 ========
-
-These scripts are in development.
+In progress.

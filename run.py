@@ -5,7 +5,6 @@ Created on Sat Dec 14 17:24:44 2013
 @author: jmcontreras
 """
 
-# TODO: Allow players to play a second turn when the roll doubles
 # TODO: Attempt one play
 # TODO: Allow a player without cash to sell their properties before defaulting
 #       Check the pay method of the Player object
@@ -21,11 +20,11 @@ import numpy as np
 
 def get_players(n_players):
     
-    # Ensure the number of players is acceptable
+    # Ensure number of players is acceptable
     if n_players < 2:
         raise ValueError('A game must have at least 2 players.')
-    elif n_players > 10:
-        raise ValueError('A game must have no more than 10 players.')
+    elif n_players > 8:
+        raise ValueError('A game must have no more than 8 players.')
     
     # Define player class
     class Player(object):
@@ -38,19 +37,19 @@ def get_players(n_players):
             self.jail_card = 0   # Number of "Get Out Of Jail Free" cards
             self.jail_turns = 0  # Number of remaining turns in jail
         
-        # Move the player across the board
+        # Move player across board
         def move(self, dice_value):
             self.position += dice_value
             if self.position >= 40:
                 self.position -= 40
                 self.cash += 200
         
-        # Buy a property
+        # Buy property
         def buy(self, prop_id, price):
             self.properties.append(prop_id)
             self.cash -= price
         
-        # Pay anoter player
+        # Pay another player
         def pay(self, payee, payment):
             if self.cash > payment:
                 self.cash -= payment
@@ -163,18 +162,42 @@ def main():
     n_players = 5
     board_file = '/Users/jmcontreras/GitHub/monopoly/board.csv'
     
-    # Get board, players, and properties
-    players = get_players(n_players)    
+    # Get players and board (including properties)
+    players = get_players(n_players)
     board = get_board(board_file)
     
-    # Start the game
+    # Start game
     while len(players) > 1:
         
         # Take turns
         for turn in range(n_players):
             
-            # Move player
-            players[turn].move(roll_dice())
+            print 'TURN {}'.format(turn)
+            # Double roll counter
+            n_double_roll = 0
+            
+            # Continue turn until player rolls no doubles or goes to jail
+            while True:
+                
+                # Roll dice
+                roll = roll_dice()
+                print 'rolled {} and {}'.format(roll[0], roll[1])
+                # Check double 
+                rolled_double = roll[0] == roll[1]
+                n_double_roll += (rolled_double).astype(int)
+                
+                # If player rolled less than 3 doubles
+                if n_double_roll < 3:
+                    # Move player across 
+                    old = players[turn].position
+                    players[turn].move(roll.sum())
+                    print 'moved from {} to {}'.format(old, players[turn].position)
+                    # If no double rolled, end turn
+                    if not rolled_double:
+                        break
+                # Else, move player to jail
+                else:
+                    players[turn].go_to_jail()
         
         # sum values across list
         # sum(players[i].cash for i in range(0,4))

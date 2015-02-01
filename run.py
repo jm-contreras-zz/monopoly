@@ -5,11 +5,16 @@ Created on Sat Dec 14 17:24:44 2013
 @author: jmcontreras
 """
 
+# v 1.0 GET THE GAME GOING
+
 # TODO: Attempt one play
 # TODO: Allow a player without cash to sell their properties before defaulting
 #       Check the pay method of the Player object
 # TODO: Many of the classes (Card, Chance, Chest, Jail, Idle) need work
 
+# v 2.0 MAKE THE GAME SMART
+
+# TODO: Players consider the state of the board before choosing a jail strategy
 
 
 # Import modules
@@ -34,15 +39,18 @@ def get_players(n_players):
             self.cash = 1500     # Cash on hand
             self.properties = [] # List of properties
             self.position = 0    # Board position
-            self.jail_card = 0   # Number of "Get Out Of Jail Free" cards
+            self.jail_cards = 0  # Number of "Get Out Of Jail Free" cards
             self.jail_turns = 0  # Number of remaining turns in jail
+            self.jail_strtg = '' # Jail strategy
         
         # Move player across board
-        def move(self, dice_value):
-            self.position += dice_value
+        def move(self, roll, verbose=False):
+            self.position += roll
             if self.position >= 40:
                 self.position -= 40
                 self.cash += 200
+            if verbose:
+                print 'New position: {}'.format(self.position)
         
         # Buy property
         def buy(self, prop_id, price):
@@ -58,6 +66,31 @@ def get_players(n_players):
                 players[payee].cash += self.cash
                 self.default(payee, payment)
         
+        # Go to jail
+        def go_to_jail(self):
+            self.position = 10
+            self.jail_turns = 3
+        
+        # Choose jail strategy
+        def choose_jail_strtg(self, rolled_double):
+            if self.jail_card > 0:
+                self.jail_strtg = 'card'
+                self.jail_turns = 0
+                self.jail_cards -= 1
+            elif self.cash >= 50:
+                self.jail_strtg = 'pay'
+                self.jail_turns = 0
+                self.cash -= 50
+            else:
+                self.jail_strtg = 'roll'
+                if rolled_double:
+                    self.jail_turns = 0
+                else:
+                    self.jail_turns -= 1
+                    if self.jail_turns == 0:
+                        self.cash -= 50
+        
+        # Default
         def default(self):
             del players[self.id]
             
@@ -149,12 +182,20 @@ def get_board(board_file):
 
 
 
-def roll_dice():
+def roll_dice(check_double=True, verbose=False):
 
     # Roll two six-sided die
-    return np.random.choice(np.arange(1, 7), 2)
-
-
+    roll = np.random.choice(np.arange(1, 7), 2)
+    
+    # Report roll, if requested
+    if verbose:
+        print 'Die roll: {} and {}'.format(roll[0], roll[1])
+    
+    # Return roll sum and, if requested, double roll indicator
+    if check_double:
+        return roll.sum(), roll[0] == roll[1]
+    else:
+        return roll.sum()
 
 def main():
     
@@ -172,30 +213,33 @@ def main():
         # Take turns
         for turn in range(n_players):
             
-            print 'TURN {}'.format(turn)
             # Double roll counter
             n_double_roll = 0
+            
+            # Figure this out!!!!
+            players[turn].jail_turns > 0
+            players[turn].choose_jail_strg(rolled_double)
             
             # Continue turn until player rolls no doubles or goes to jail
             while True:
                 
                 # Roll dice
-                roll = roll_dice()
-                print 'rolled {} and {}'.format(roll[0], roll[1])
-                # Check double 
-                rolled_double = roll[0] == roll[1]
+                roll, rolled_double = roll_dice(verbose=True)
+
+                # Update double roll counter
                 n_double_roll += (rolled_double).astype(int)
                 
                 # If player rolled less than 3 doubles
                 if n_double_roll < 3:
-                    # Move player across 
-                    old = players[turn].position
-                    players[turn].move(roll.sum())
-                    print 'moved from {} to {}'.format(old, players[turn].position)
+                    
+                    # Move player 
+                    players[turn].move(roll, verbose=True)
+
                     # If no double rolled, end turn
                     if not rolled_double:
                         break
-                # Else, move player to jail
+                
+                # Otherwise, send player to jail
                 else:
                     players[turn].go_to_jail()
         

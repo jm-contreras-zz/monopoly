@@ -5,12 +5,12 @@ Created on Sat Dec 14 17:24:44 2013
 @author: jmcontreras
 """
 
-# v 1.0 GET THE GAME GOING
+# v 1.0 GET THE MECHANICS OF THE GAME GOING
 
-# TODO: Attempt one play
+# TODO: Attempt a whole game
 # TODO: Allow a player without cash to sell their properties before defaulting
 #       Check the pay method of the Player object
-# TODO: Many of the classes (Card, Chance, Chest, Jail, Idle) need work
+# TODO: Many of the classes (Chance, Chest, Idle) need work
 
 # v 2.0 MAKE THE GAME SMART
 
@@ -73,7 +73,7 @@ def get_players(n_players):
         
         # Choose jail strategy
         def choose_jail_strtg(self, rolled_double):
-            if self.jail_card > 0:
+            if self.jail_cards > 0:
                 self.jail_strtg = 'card'
                 self.jail_turns = 0
                 self.jail_cards -= 1
@@ -97,6 +97,7 @@ def get_players(n_players):
     # Create and return players list
     players = [Player(p) for p in xrange(n_players)]
     return players
+
 
 
 def get_board(board_file):
@@ -197,6 +198,8 @@ def roll_dice(check_double=True, verbose=False):
     else:
         return roll.sum()
 
+
+
 def main():
     
     # Declarations
@@ -205,7 +208,7 @@ def main():
     
     # Get players and board (including properties)
     players = get_players(n_players)
-    board = get_board(board_file)
+    #board = get_board(board_file)
     
     # Start game
     while len(players) > 1:
@@ -216,10 +219,6 @@ def main():
             # Double roll counter
             n_double_roll = 0
             
-            # Figure this out!!!!
-            players[turn].jail_turns > 0
-            players[turn].choose_jail_strg(rolled_double)
-            
             # Continue turn until player rolls no doubles or goes to jail
             while True:
                 
@@ -228,6 +227,16 @@ def main():
 
                 # Update double roll counter
                 n_double_roll += (rolled_double).astype(int)
+                
+                # If player is in jail
+                if players[turn].jail_turns > 0:
+                    
+                    # Select jail strategy
+                    players[turn].choose_jail_strtg(rolled_double)
+                    
+                    # If player is still in jail
+                    if players[turn].jail_turns > 0:
+                        break
                 
                 # If player rolled less than 3 doubles
                 if n_double_roll < 3:
@@ -239,9 +248,10 @@ def main():
                     if not rolled_double:
                         break
                 
-                # Otherwise, send player to jail
+                # Otherwise, send player to jail and end turn
                 else:
                     players[turn].go_to_jail()
+                    break
         
         # sum values across list
         # sum(players[i].cash for i in range(0,4))

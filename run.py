@@ -16,6 +16,11 @@ Created on Sat Dec 14 17:24:44 2013
 
 # TODO: Players consider the state of the board before choosing a jail strategy
 
+# Declarations
+N_PLAYERS = 5
+BOARD_FILE = '/Users/jmcontreras/GitHub/monopoly/board.csv'
+
+
 
 # Import modules
 import csv
@@ -23,12 +28,12 @@ import numpy as np
 
 
 
-def get_players(n_players):
+def get_players(N_PLAYERS):
     
     # Ensure number of players is acceptable
-    if n_players < 2:
+    if N_PLAYERS < 2:
         raise ValueError('A game must have at least 2 players.')
-    elif n_players > 8:
+    elif N_PLAYERS > 8:
         raise ValueError('A game must have no more than 8 players.')
     
     # Define player class
@@ -95,12 +100,12 @@ def get_players(n_players):
             del players[self.id]
             
     # Create and return players list
-    players = [Player(p) for p in xrange(n_players)]
+    players = [Player(p) for p in xrange(N_PLAYERS)]
     return players
 
 
 
-def get_board(board_file):
+def get_board(BOARD_FILE):
     
     class Property(object):
         def __init__(self, name, position, price, rent):
@@ -155,7 +160,7 @@ def get_board(board_file):
         pass
     
     board = []
-    for r in csv.DictReader(open(board_file, 'rU')):
+    for r in csv.DictReader(open(BOARD_FILE, 'rU')):
         if r['Space'] == 'Street':
             board.append(Street(r['Name'], int(r['Position']), r['Color'],
                                 int(r['Price']), int(r['PriceBuild']),
@@ -202,19 +207,15 @@ def roll_dice(check_double=True, verbose=False):
 
 def main():
     
-    # Declarations
-    n_players = 5
-    board_file = '/Users/jmcontreras/GitHub/monopoly/board.csv'
-    
     # Get players and board (including properties)
-    players = get_players(n_players)
-    #board = get_board(board_file)
+    players = get_players(N_PLAYERS)
+    #board = get_board(BOARD_FILE)
     
     # Start game
     while len(players) > 1:
         
         # Take turns
-        for turn in range(n_players):
+        for turn in range(N_PLAYERS):
             
             # Double roll counter
             n_double_roll = 0

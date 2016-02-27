@@ -7,7 +7,14 @@ Created on Sat Dec 14 17:24:44 2013
 
 # v 1.0 GET THE MECHANICS OF THE GAME GOING
 
-# TODO: Attempt a whole game
+# This is what is happening so far:
+
+# (1) Players go around the board by rolling the dice. Doubles allow another
+#     turn and 3 doubles land a player in jail.
+# (2) Once in jail, players take the following strategy: use a get-out-of-jail  
+#     card if you have one, otherwise pay as soon as you can, otherwise roll
+
+# Next up
 # TODO: Allow a player without cash to sell their properties before defaulting
 #       Check the pay method of the Player object
 # TODO: Many of the classes (Chance, Chest, Idle) need work
@@ -24,7 +31,7 @@ import numpy as np
 
 
 def get_players(n_players):
-    
+
     # Ensure number of players is acceptable
     if n_players < 2:
         raise ValueError('A game must have at least 2 players.')
@@ -50,7 +57,7 @@ def get_players(n_players):
                 self.position -= 40
                 self.cash += 200
             if verbose:
-                print 'New position: {}'.format(self.position)
+                print 'Player {} to space: {}'.format(self.id, self.position)
         
         # Buy property
         def buy(self, prop_id, price):
@@ -208,7 +215,9 @@ def main():
     
     # Get players and board (including properties)
     players = get_players(n_players)
-    #board = get_board(board_file)
+    board = get_board(board_file)
+    
+    game_round = 1    
     
     # Start game
     while len(players) > 1:
@@ -223,7 +232,7 @@ def main():
             while True:
                 
                 # Roll dice
-                roll, rolled_double = roll_dice(verbose=True)
+                roll, rolled_double = roll_dice(verbose=False)
 
                 # Update double roll counter
                 n_double_roll += (rolled_double).astype(int)
@@ -242,7 +251,7 @@ def main():
                 if n_double_roll < 3:
                     
                     # Move player 
-                    players[turn].move(roll, verbose=True)
+                    players[turn].move(roll, verbose=False)
 
                     # If no double rolled, end turn
                     if not rolled_double:
@@ -253,5 +262,14 @@ def main():
                     players[turn].go_to_jail()
                     break
         
+        game_round += 1      
+        
+        if game_round == 20:
+            break
+        
         # sum values across list
         # sum(players[i].cash for i in range(0,4))
+
+if __name__ == '__main__':
+    
+    main()

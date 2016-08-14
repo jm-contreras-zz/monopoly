@@ -207,6 +207,28 @@ def roll_dice(check_double=True, verbose=False):
 
 
 
+
+class switch(object):
+    def __init__(self, value):
+        self.value = value
+        self.fall = False
+
+    def __iter__(self):
+        """Return the match method once, then stop"""
+        yield self.match
+        raise StopIteration
+    
+    def match(self, *args):
+        """Indicate whether or not to enter a case suite"""
+        if self.fall or not args:
+            return True
+        elif self.value in args: # changed for v1.5, see below
+            self.fall = True
+            return True
+        else:
+            return False
+
+
 def main():
     
     # Declarations
@@ -262,7 +284,9 @@ def main():
                     players[turn].go_to_jail()
                     break
                 
-                
+                # Now here is where we start interacting with the board
+                type(board[4]).__name__
+                http://code.activestate.com/recipes/410692/
         
         game_round += 1      
         

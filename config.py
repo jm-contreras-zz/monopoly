@@ -1,0 +1,4 @@
+VERBOSE = True
+N_PLAYERS = 5
+ROUND = 1
+BOARD_FILENAME = 'board.csv'

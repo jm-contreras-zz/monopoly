@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6e0a30f9-5ff1-4d9f-8d6b-9e7e1d656f7b" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/jmcontreras.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/monopoly.py" afterPath="$PROJECT_DIR$/src/monopoly.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,8 +23,8 @@
       <file leaf-file-name="monopoly.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/monopoly.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="23" column="0" lean-forward="true" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+            <state relative-caret-position="1785">
+              <caret line="166" column="8" lean-forward="true" selection-start-line="166" selection-start-column="8" selection-end-line="166" selection-end-column="8" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -379,8 +377,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/monopoly.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="23" column="0" lean-forward="true" selection-start-line="23" selection-start-column="0" selection-end-line="23" selection-end-column="0" />
+        <state relative-caret-position="1785">
+          <caret line="166" column="8" lean-forward="true" selection-start-line="166" selection-start-column="8" selection-end-line="166" selection-end-column="8" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

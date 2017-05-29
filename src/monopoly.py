@@ -11,6 +11,7 @@ import config as c
 class Player:
     # TODO: check_monopoly function for players to determine whether they can build
     # TODO: check_buildings function for players to determine where they can build
+    # TODO: Return properties to bank upon bankruptcy
 
     def __init__(self, player_id):
         """Initialize player."""
@@ -84,50 +85,65 @@ class Player:
 
     def go_bankrupt(self, players):
         """Remove player from game."""
-        # TODO: Return properties to bank
 
         del players[self.id]
 
 
-class Property(object):
+class Property:
+
     def __init__(self, name, position, price, rent):
-        self.name = name
-        self.position = position
-        self.price = price
-        self.price_mortgage = price / 2
-        self.rent = rent
-        self.rent_now = rent
-        self.mortgage = False
-        self.owner = None
+        """Initialize base property."""
+
+        self.name = name                 # Property name
+        self.position = position         # Board position
+        self.price = price               # Price to buy
+        self.price_mortgage = price / 2  # Mortgage price
+        self.rent = rent                 # Initial rent
+        self.rent_now = rent             # Current rent
+        self.mortgage = False            # Mortgage status
+        self.owner = None                # Property owner
 
 
 class Street(Property):
-    def __init__(self, name, position, color, price,
-                 price_building, rent, rent_building):
+
+    def __init__(self, name, position, color, price, price_building, rent, rent_building):
+        """Initialize street."""
+
         Property.__init__(self, name, position, price, rent)
-        self.color = color
-        self.price_building = price_building
-        self.rent_monopoly = rent * 2
-        self.rent_building = rent_building
-        self.n_building = 0
+
+        self.color = color                    # Monopoly color
+        self.price_building = price_building  # Building cost
+        self.rent_monopoly = rent * 2         # Rent with monopoly
+        self.rent_building = rent_building    # Building rent
+        self.n_building = 0                   # Number of buildings
 
 
 class Railroad(Property):
+
     def __init__(self, name, position, price, rent):
+        """Initialize railroad."""
+
         Property.__init__(self, name, position, price, rent)
-        self.rent_double = rent * 2
-        self.rent_triple = self.rent_double * 2
-        self.rent_monopoly = self.rent_triple * 2
+
+        self.rent_double = rent * 2    # Rent with 2 railroads
+        self.rent_triple = rent * 3    # Rent with 3 railroads
+        self.rent_monopoly = rent * 4  # Rent with 4 railroads
 
 
 class Utility(Property):
+
     def __init__(self, name, position, price, rent):
+        """Initialize utility."""
+
         Property.__init__(self, name, position, price, rent)
-        self.rent_monopoly = rent + 6
+
+        self.rent_monopoly = rent + 6  # Rent with utility monopoly
 
 
 class Tax(object):
+
     def __init__(self, price):
+
         self.price = price
 
 

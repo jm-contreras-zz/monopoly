@@ -9,22 +9,24 @@ import config as c
 ###########
 
 class Player:
+    # TODO: check_monopoly function for players to determine whether they can build
+    # TODO: check_buildings function for players to determine where they can build
 
     def __init__(self, player_id):
         """Initialize player."""
 
-        self.id = player_id         # Identification number
-        self.cash = 1500            # Cash on hand
-        self.properties = []        # List of properties
-        self.position = 0           # Board position
-        self.jail_cards = 0         # Number of "Get Out Of Jail Free" cards
-        self.jail_turns = 0         # Number of remaining turns in jail
-        self.jail_strategy = None   # Jail strategy
+        self.id = player_id        # Identification number
+        self.cash = 1500           # Cash on hand
+        self.properties = []       # List of properties
+        self.position = 0          # Board position
+        self.jail_cards = 0        # Number of "Get Out Of Jail Free" cards
+        self.jail_turns = 0        # Number of remaining turns in jail
 
     def move(self, roll):
         """Move forward on board."""
 
         self.position += roll
+
         if self.position >= 40:
             self.position -= 40
             self.cash += 200
@@ -32,42 +34,28 @@ class Player:
     def react_to_property_visit(self, players, prop):
         """Decide whether to pay rent or buy property."""
 
-        prop_has_owner = prop.owner is not None
-        prop_has_no_mortgage = prop.mortgage is False
-        self_can_afford = self.cash >= prop.price
+        prop_is_owned = prop.owner is not None
+        prop_is_unmortgaged = prop.mortgage is False
+        player_can_afford = self.cash >= prop.price
 
-        if prop_has_owner and prop_has_no_mortgage:
+        if prop_is_owned and prop_is_unmortgaged:
             self.pay(players[prop.owner], prop.rent_now)
 
-        elif ~prop_has_owner and self_can_afford:
+        elif ~prop_is_owned and player_can_afford:
             self.buy(prop)
 
-    def evaluate_build(self):
-        # Create a way to let players know when they have a monopoly
-        # Create a way also of letting players know how many buildings they have
-        # The second is a little tougher because you have to build them in a certain order
-        # At first, just choose randomly
-        # Then, they can start building their hotels as soon as they can
-        pass
-
-    def buy(self, property_):
-        """Acquire a property from the bank or another player. Pay for the property and update ownership."""
-
-        self.properties.append(property_.position)
-        self.cash -= property_.price
-        property_.owner = self.id
-
-        if c.VERBOSE:
-            print 'Player {} bought {} from {}'.format(self.id, property_.name, '')
-
-    def pay(self, other, payment):
-        """Pay for a property"""
+    def pay(self, seller, payment):
+        """Pay cash to another player or bank."""
 
         self.cash -= payment
-        other.cash += payment
+        seller.cash += payment
 
-        if c.VERBOSE:
-            print 'Player {} paid ${} to Player {}'.format(self.id, payment, other.id)
+    def buy(self, prop_on_sale):
+        """Buy property from another player or bank."""
+
+        self.properties.append(prop_on_sale.position)
+        self.cash -= prop_on_sale.price
+        prop_on_sale.owner = self.id
 
     def go_to_jail(self):
         """Send player to jail."""
@@ -75,24 +63,18 @@ class Player:
         self.position = 10
         self.jail_turns = 3
 
-        if c.VERBOSE:
-            print 'Player {} goes to jail'.format(self.id)
-
-    def choose_jail_strategy(self, rolled_double):
-        """"""
+    def take_jail_turn(self, rolled_double):
+        """Take turn in jail."""
 
         if self.jail_cards > 0:
-            self.jail_strategy = 'card'
             self.jail_turns = 0
             self.jail_cards -= 1
 
         elif self.cash >= 50:
-            self.jail_strategy = 'pay'
             self.jail_turns = 0
             self.cash -= 50
 
         else:
-            self.jail_strategy = 'roll'
             if rolled_double:
                 self.jail_turns = 0
             else:
@@ -100,11 +82,9 @@ class Player:
                 if self.jail_turns == 0:
                     self.cash -= 50
 
-        if c.VERBOSE:
-            print 'Player {} took jail strategy {} and has {} turns left'.format(self.id, self.jail_strategy,
-                                                                                 self.jail_turns)
-
-    def default(self, players):
+    def go_bankrupt(self, players):
+        """Remove player from game."""
+        # TODO: Return properties to bank
 
         del players[self.id]
 

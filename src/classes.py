@@ -1,4 +1,62 @@
-# TODO: Finish other classes
+import pandas as pd
+
+
+class Game:
+    """Keeps track of all game pieces."""
+
+    def __init__(self):
+
+        self.players = []
+        self.board = []
+
+    def get_players(self, n_players):
+        """
+        Create list of 2 to 8 game players.
+        :param int n_players: Number of players in game
+        """
+
+        # Ensure number of players requested is legal
+        if (n_players < 2) or (8 < n_players):
+            raise ValueError('A game must have between 2 to 8 players. You input {} players.'.format(n_players))
+
+        # Create list of players
+        self.players = [Player(p) for p in range(n_players)]
+
+    def get_board(self, board_file):
+        """
+        Create board game with properties from CSV file in board_file.
+        :param str board_file: Filename of CSV with board parameters
+        """
+
+        for _, r in pd.read_csv(board_file).iterrows():
+
+            for case in Switch(r['class']):
+
+                if case('Street'):
+                    self.board.append(Street(r['name'], r['position'], r['color'], r['price_buy'], r['price_build'],
+                                             r['rent'], [r['rent_build_1'], r['rent_build_2'], r['rent_build_3'],
+                                                         r['rent_build_4'], r['rent_build_5']]))
+
+                elif case('Railroad'):
+                    self.board.append(Railroad(r['name'], r['position'], r['price_buy'], r['rent']))
+
+                elif case('Utility'):
+                    self.board.append(Utility(r['name'], r['position'], r['price_buy'], r['rent']))
+
+                elif case('Tax'):
+                    self.board.append(Tax(r['price_buy']))
+
+                elif case('Chance'):
+                    self.board.append(Chance())
+
+                elif case('Chest'):
+                    self.board.append(Chest())
+
+                elif case('Jail'):
+                    self.board.append(Jail())
+
+                elif case('Idle'):
+                    self.board.append(Idle())
 
 
 class Player:
@@ -7,7 +65,6 @@ class Player:
     # TODO: Return properties to bank upon bankruptcy
 
     def __init__(self, player_id):
-        """Initialize player."""
 
         self.id = player_id        # Identification number
         self.cash = 1500           # Cash on hand
@@ -163,15 +220,18 @@ class Idle(object):
 class Switch(object):
 
     def __init__(self, value):
+
         self.value = value
         self.fall = False
 
     def __iter__(self):
         """Return the match method once, then stop"""
+
         yield self.match
         raise StopIteration
 
     def match(self, *args):
+
         """Indicate whether or not to enter a case suite"""
         if self.fall or not args:
             return True

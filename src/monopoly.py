@@ -1,15 +1,18 @@
-import classes
-import config
-import utils
+import src.classes as classes
+import src.config as config
+import src.utils as utils
 
 
 def main():
 
-    # Create object with players
-    players = utils.get_players(config.N_PLAYERS)
+    # Initialize game
+    g = classes.Game()
+
+    # Create list of players
+    g.get_players(config.N_PLAYERS)
 
     # Create board with properties
-    board = utils.get_board(config.BOARD_FILENAME)
+    g.get_board(config.BOARD_FILENAME)
 
     # Continue playing as long as more than one player remains in game
     while len(players) > 1:

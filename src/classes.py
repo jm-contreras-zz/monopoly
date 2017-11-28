@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 
@@ -7,7 +8,9 @@ class Game:
     def __init__(self):
 
         self.players = []
+        self.players_remaining = None
         self.board = []
+        self.round = 0
 
     def get_players(self, n_players):
         """
@@ -19,8 +22,9 @@ class Game:
         if (n_players < 2) or (8 < n_players):
             raise ValueError('A game must have between 2 to 8 players. You input {} players.'.format(n_players))
 
-        # Create list of players
+        # Create list of players and set number of players remaining
         self.players = [Player(p) for p in range(n_players)]
+        self.players_remaining = n_players
 
     def get_board(self, board_file):
         """
@@ -66,12 +70,13 @@ class Player:
 
     def __init__(self, player_id):
 
-        self.id = player_id        # Identification number
-        self.cash = 1500           # Cash on hand
-        self.properties = []       # List of properties
-        self.position = 0          # Board position
-        self.jail_cards = 0        # Number of "Get Out Of Jail Free" cards
-        self.jail_turns = 0        # Number of remaining turns in jail
+        self.id = player_id    # Identification number
+        self.cash = 1500       # Cash on hand
+        self.properties = []   # List of properties
+        self.position = 0      # Board position
+        self.jail_cards = 0    # Number of "Get Out Of Jail Free" cards
+        self.jail_turns = 0    # Number of remaining turns in jail
+        self.bankrupt = False  # Bankrupt status
 
     def move(self, roll):
         """Move forward on board."""
@@ -133,10 +138,30 @@ class Player:
                 if self.jail_turns == 0:
                     self.cash -= 50
 
-    def go_bankrupt(self, players):
+    def go_bankrupt(self, game):
         """Remove player from game."""
 
-        del players[self.id]
+        self.bankrupt = True
+        game.players_remaining -= 1
+
+
+class Dice:
+
+    def __init__(self):
+
+        self.roll = None
+        self.double = False
+        self.double_counter = 0
+
+    def roll(self):
+        """Roll two fair six-sided die and store the sum of the roll, an indicator of whether the roll was double, and a
+        counter of the number of consecutive double rolls."""
+
+        roll = np.random.choice(np.arange(1, 7), 2)
+
+        self.roll = roll.sum()
+        self.double = roll[0] == roll[1]
+        self.double_counter += self.double
 
 
 class Property:

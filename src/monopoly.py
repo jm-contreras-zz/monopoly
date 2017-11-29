@@ -1,6 +1,5 @@
 import src.classes as classes
 import src.config as config
-import src.utils as utils
 
 
 def main():

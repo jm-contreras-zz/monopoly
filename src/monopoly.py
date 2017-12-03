@@ -25,26 +25,27 @@ def main():
         # Define player of turn
         for turn_player in g.players:
 
-            # Continue if player is bankrupt
-            if turn_player.bankrupt:
-                continue
+            # Continue until turn ends
+            while True:
 
-            # Continue if player is in jail
-            if turn_player.jail_turns > 0:
-                continue
-
-            # Roll dice to start turn
-            d.roll()
-
-                # If player is still in jail
-                if curr_player.jail_turns > 0:
+                # Continue if player is bankrupt
+                if turn_player.bankrupt:
                     break
 
-            # If player rolled less than 3 doubles
-            if n_double_roll < 3:
+                # Continue if player is in jail
+                if turn_player.jail_turns > 0:
+                    break
+
+                # Roll dice to start turn
+                d.roll()
+
+                # Send player to jail if they roll 3 doubles
+                if d.double_counter == 3:
+                    turn_player.go_to_jail()
+                    break
 
                 # Move player
-                curr_player.move(roll)
+                turn_player.move(d.roll)
 
                 # Define current board space
                 curr_space = board[curr_player.position]
@@ -52,16 +53,3 @@ def main():
                 for case in classes.Switch(type(curr_space).__name__):
                     if case('Street'):
                         curr_player.evaluate_buy(curr_space, players)
-
-                # If no double rolled, end turn
-                if not rolled_double:
-                    break
-
-            # Otherwise, send player to jail and end turn
-            elif n_double_roll == 3:
-
-                curr_player.go_to_jail()
-                break
-
-                # Now here is where we start interacting with the board
-                # type(board[4]).__name__

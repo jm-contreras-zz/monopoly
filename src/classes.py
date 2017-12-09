@@ -79,7 +79,10 @@ class Player:
         self.bankrupt = False  # Bankrupt status
 
     def move(self, roll):
-        """Move forward on board."""
+        """
+        Move player on the board. Update player's position and collect $200 if player passed Go.
+        :param int roll: Number of board positions to move
+        """
 
         self.position += roll
 
@@ -88,6 +91,7 @@ class Player:
             self.cash += 200
 
     def react_to_property_visit(self, players, prop):
+        # TODO: Update method
         """Decide whether to pay rent or buy property."""
 
         prop_is_owned = prop.owner is not None
@@ -102,44 +106,55 @@ class Player:
 
     def pay(self, seller, payment):
         """Pay cash to another player or bank."""
+        # TODO: Update method
 
         self.cash -= payment
         seller.cash += payment
 
     def buy(self, prop_on_sale):
         """Buy property from another player or bank."""
+        # TODO: Update method
 
         self.properties.append(prop_on_sale.position)
         self.cash -= prop_on_sale.price
         prop_on_sale.owner = self.id
 
     def go_to_jail(self):
-        """Send player to jail."""
+        """Send player to jail. Update their position on the board and start the jail turn counter."""
 
         self.position = 10
         self.jail_turns = 3
 
-    def take_jail_turn(self, rolled_double):
-        """Take turn in jail."""
+    def choose_jail_strategy(self, rolled_double):
+        # TODO: Replace with artificially-intelligent strategy
+        """
+        Decide what to do during a turn in jail. Currently, a player chooses the following strategies in this order:
+        Roll a double, use a Get Out of Jail Free card, and pay $50.
+        :param bool rolled_double: Indicator denoting whether dice roll was double
+        :return bool leave_jail: Indicator denoting whether player leaves jail
+        """
 
+        if rolled_double:
+            self.jail_turns = 0
+            return True
+
+        # TODO: Add option to buy a Get Out of Jail Free card
         if self.jail_cards > 0:
             self.jail_turns = 0
             self.jail_cards -= 1
+            return True
 
-        elif self.cash >= 50:
+        # TODO: Add option to fix bug of having player with negative cash
+        if self.cash >= 50:
             self.jail_turns = 0
             self.cash -= 50
-
-        else:
-            if rolled_double:
-                self.jail_turns = 0
-            else:
-                self.jail_turns -= 1
-                if self.jail_turns == 0:
-                    self.cash -= 50
+            return True
 
     def go_bankrupt(self, game):
-        """Remove player from game."""
+        """
+        Remove player from game. Update number of players that remain in the game.
+        :param Game game: Game object
+        """
 
         self.bankrupt = True
         game.players_remaining -= 1

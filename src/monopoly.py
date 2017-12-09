@@ -13,9 +13,6 @@ def main():
     # Create board with properties
     g.get_board(config.BOARD_FILENAME)
 
-    # Create dice
-    d = classes.Dice()
-
     # Play as long as more than 1 player remains in game
     while g.players_remaining > 1:
 
@@ -25,28 +22,34 @@ def main():
         # Define player of turn
         for turn_player in g.players:
 
+            # Initialize dice
+            d = classes.Dice()
+
             # Continue until turn ends
             while True:
 
-                # Continue if player is bankrupt
+                # Skip turn if player is bankrupt
                 if turn_player.bankrupt:
                     break
 
-                # Continue if player is in jail
-                if turn_player.jail_turns > 0:
-                    break
-
-                # Roll dice to start turn
+                # Roll the dice
                 d.roll()
 
-                # Send player to jail if they roll 3 doubles
+                # If third double, then go to jail and end turn
                 if d.double_counter == 3:
                     turn_player.go_to_jail()
                     break
 
+                # Continue if player is in jail
+                if turn_player.jail_turns > 0:
+                    leave_jail = turn_player.choose_jail_strategy(rolled_double=d.double)
+                    if not leave_jail:
+                        break
+
                 # Move player
                 turn_player.move(d.roll)
 
+                # TODO: This is where you stopped
                 # Define current board space
                 curr_space = board[curr_player.position]
 

@@ -1,16 +1,14 @@
 import logging
 import sys
 
-import bank
 import config
 import dice
 import game
-import player
 import spaces
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-logger = logging.getLogger(__name__)
+
 
 def main():
 

@@ -58,17 +58,22 @@ def main():
                         break
 
                 # Move player
-                turn_player.move(d.roll)
+                turn_player.move(d.roll_sum)
 
                 # Define current board space
                 space = g.board[turn_player.position]
 
                 # Pay taxes
-                if type(space) == spaces.Tax:
+                if isinstance(space, spaces.Tax):
                     turn_player.pay(space.tax, g.bank)
 
-                if type(space) == spaces.Street or type(space) == spaces.Railroad or type(space) == spaces.Utility:
+                # Choose property strategy
+                elif isinstance(space, spaces.Property):
                     turn_player.choose_property_strategy(space)
+
+                # TODO: Write a method that checks for monopolies every time a property is acquired so that you know
+                if len(turn_player.properties) > 0:
+                    turn_player.choose_building_strategy()
 
 
 if __name__ == '__main__':

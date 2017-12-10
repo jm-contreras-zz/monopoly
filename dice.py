@@ -9,7 +9,7 @@ class Dice:
 
     def __init__(self):
 
-        self.roll = None
+        self.roll_sum = None
         self.double = False
         self.double_counter = 0
 
@@ -19,7 +19,7 @@ class Dice:
 
         roll = np.random.choice(np.arange(1, 7), 2)
 
-        self.roll = roll.sum()
+        self.roll_sum = roll.sum()
         self.double = roll[0] == roll[1]
         self.double_counter += self.double
 

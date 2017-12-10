@@ -15,7 +15,7 @@ class Player:
         self.id = player_id    # Identification number
         self.cash = 1500       # Cash on hand
         self.properties = []   # List of properties
-        self.position = 0      # Board position
+        self.position = 1      # Board position
         self.jail_cards = 0    # Number of "Get Out Of Jail Free" cards
         self.jail_turns = 0    # Number of remaining turns in jail
         self.bankrupt = False  # Bankrupt status

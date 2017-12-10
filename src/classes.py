@@ -7,6 +7,7 @@ class Game:
 
     def __init__(self):
 
+        self.bank = []
         self.players = []
         self.players_remaining = None
         self.board = []
@@ -25,6 +26,14 @@ class Game:
         # Create list of players and set number of players remaining
         self.players = [Player(p) for p in range(n_players)]
         self.players_remaining = n_players
+
+    def get_bank(self):
+        """
+        Create a bank and subtract from its reserves the cash allotted to players.
+        """
+
+        self.bank = Bank()
+        self.bank.cash -= self.players_remaining * 1500
 
     def get_board(self, board_file):
         """
@@ -61,6 +70,13 @@ class Game:
 
                 elif case('Idle'):
                     self.board.append(Idle())
+
+
+class Bank:
+
+    def __init__(self):
+
+        self.cash = 20580
 
 
 class Player:
@@ -104,12 +120,21 @@ class Player:
         elif ~prop_is_owned and player_can_afford:
             self.buy(prop)
 
-    def pay(self, seller, payment):
-        """Pay cash to another player or bank."""
-        # TODO: Update method
+    def pay(self, payment, recipient, game):
+        """
+        Pay an amount of cash to a recipient.
+        :param int payment: Cash to be paid to recipient
+        :param obj recipient: Player or bank receiving payment
+        :param Game game: Update number of players in game if bankruptcy results
+        """
 
-        self.cash -= payment
-        seller.cash += payment
+        if self.cash >= payment:
+            self.cash -= payment
+            recipient.cash += payment
+
+        else:
+            self.go_bankrupt(game)
+
 
     def buy(self, prop_on_sale):
         """Buy property from another player or bank."""
@@ -131,24 +156,27 @@ class Player:
         Decide what to do during a turn in jail. Currently, a player chooses the following strategies in this order:
         Roll a double, use a Get Out of Jail Free card, and pay $50.
         :param bool rolled_double: Indicator denoting whether dice roll was double
-        :return bool leave_jail: Indicator denoting whether player leaves jail
+        :return bool stay_in_jail: Indicator denoting whether player remains in jail for additional turn(s)
         """
 
         if rolled_double:
             self.jail_turns = 0
-            return True
+            return False
 
         # TODO: Add option to buy a Get Out of Jail Free card
         if self.jail_cards > 0:
             self.jail_turns = 0
             self.jail_cards -= 1
-            return True
+            return False
 
         # TODO: Add option to fix bug of having player with negative cash
         if self.cash >= 50:
             self.jail_turns = 0
             self.cash -= 50
-            return True
+            return False
+
+        self.jail_turns -= 1
+        return True
 
     def go_bankrupt(self, game):
         """
@@ -231,10 +259,11 @@ class Utility(Property):
 
 
 class Tax(object):
+    """Collect a tax from a player that lands on tihs space."""
 
-    def __init__(self, price):
+    def __init__(self, tax):
 
-        self.price = price
+        self.tax = tax
 
 
 class Card(object):

@@ -10,6 +10,9 @@ def main():
     # Create list of players
     g.get_players(config.N_PLAYERS)
 
+    # Create bank
+    g.get_bank()
+
     # Create board with properties
     g.get_board(config.BOARD_FILENAME)
 
@@ -42,17 +45,16 @@ def main():
 
                 # Continue if player is in jail
                 if turn_player.jail_turns > 0:
-                    leave_jail = turn_player.choose_jail_strategy(rolled_double=d.double)
-                    if not leave_jail:
+                    stay_in_jail = turn_player.choose_jail_strategy(rolled_double=d.double)
+                    if stay_in_jail:
                         break
 
                 # Move player
                 turn_player.move(d.roll)
 
-                # TODO: This is where you stopped
                 # Define current board space
-                curr_space = board[curr_player.position]
+                space = g.board[turn_player.position]
 
-                for case in classes.Switch(type(curr_space).__name__):
-                    if case('Street'):
-                        curr_player.evaluate_buy(curr_space, players)
+                # Pay taxes
+                if type(space) == classes.Tax:
+                    turn_player.pay(space.tax, g.bank, g)

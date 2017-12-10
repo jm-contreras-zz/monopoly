@@ -1,12 +1,21 @@
-import classes
+import logging
+import sys
+
+import bank
 import config
+import dice
+import game
+import player
 import spaces
 
+
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def main():
 
     # Initialize game
-    g = classes.Game()
+    g = game.Game()
 
     # Create list of players
     g.get_players(config.N_PLAYERS)
@@ -21,13 +30,13 @@ def main():
     while g.players_remaining > 1:
 
         # Update game round
-        g.round += 1
+        g.update_round()
 
         # Define player of turn
         for turn_player in g.players:
 
             # Initialize dice
-            d = classes.Dice()
+            d = dice.Dice()
 
             # Continue until turn ends
             while True:
@@ -58,4 +67,12 @@ def main():
 
                 # Pay taxes
                 if type(space) == spaces.Tax:
-                    turn_player.pay(space.tax, g.bank, g)
+                    turn_player.pay(space.tax, g.bank)
+
+                if type(space) == spaces.Street or type(space) == spaces.Railroad or type(space) == spaces.Utility:
+                    turn_player.choose_property_strategy(space)
+
+
+if __name__ == '__main__':
+
+    main()

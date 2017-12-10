@@ -1,5 +1,6 @@
-import src.classes as classes
-import src.config as config
+import classes
+import config
+import spaces
 
 
 def main():
@@ -56,5 +57,5 @@ def main():
                 space = g.board[turn_player.position]
 
                 # Pay taxes
-                if type(space) == classes.Tax:
+                if type(space) == spaces.Tax:
                     turn_player.pay(space.tax, g.bank, g)

@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+import spaces
+
 
 class Game:
     """Keeps track of all game pieces."""
@@ -41,35 +43,30 @@ class Game:
         :param str board_file: Filename of CSV with board parameters
         """
 
-        for _, r in pd.read_csv(board_file).iterrows():
+        board_df = pd.read_csv(board_file)
 
-            for case in Switch(r['class']):
+        for _, attributes in board_df.iterrows():
 
-                if case('Street'):
-                    self.board.append(Street(r['name'], r['position'], r['color'], r['price_buy'], r['price_build'],
-                                             r['rent'], [r['rent_build_1'], r['rent_build_2'], r['rent_build_3'],
-                                                         r['rent_build_4'], r['rent_build_5']]))
+            if attributes['class'] == 'Street':
+                self.board.append(spaces.Street(attributes))
 
-                elif case('Railroad'):
-                    self.board.append(Railroad(r['name'], r['position'], r['price_buy'], r['rent']))
+            if attributes['class'] == 'Railroad':
+                self.board.append(spaces.Railroad(attributes))
 
-                elif case('Utility'):
-                    self.board.append(Utility(r['name'], r['position'], r['price_buy'], r['rent']))
+            if attributes['class'] == 'Utility':
+                self.board.append(spaces.Utility(attributes))
 
-                elif case('Tax'):
-                    self.board.append(Tax(r['price_buy']))
+            if attributes['class'] == 'Tax':
+                self.board.append(spaces.Tax(attributes))
 
-                elif case('Chance'):
-                    self.board.append(Chance())
+            if attributes['class'] == 'Chance':
+                self.board.append(spaces.Chance())
 
-                elif case('Chest'):
-                    self.board.append(Chest())
+            if attributes['class'] == 'Chest':
+                self.board.append(spaces.Chest())
 
-                elif case('Jail'):
-                    self.board.append(Jail())
-
-                elif case('Idle'):
-                    self.board.append(Idle())
+            if attributes['class'] in ['Jail', 'Idle']:
+                self.board.append([])
 
 
 class Bank:
@@ -205,107 +202,3 @@ class Dice:
         self.roll = roll.sum()
         self.double = roll[0] == roll[1]
         self.double_counter += self.double
-
-
-class Property:
-
-    def __init__(self, name, position, price, rent):
-        """Initialize base property."""
-
-        self.name = name                 # Property name
-        self.position = position         # Board position
-        self.price = price               # Price to buy
-        self.price_mortgage = price / 2  # Mortgage price
-        self.rent = rent                 # Initial rent
-        self.rent_now = rent             # Current rent
-        self.mortgage = False            # Mortgage status
-        self.owner = None                # Property owner
-
-
-class Street(Property):
-
-    def __init__(self, name, position, color, price, price_building, rent, rent_building):
-        """Initialize street."""
-
-        Property.__init__(self, name, position, price, rent)
-
-        self.color = color                    # Monopoly color
-        self.price_building = price_building  # Building cost
-        self.rent_monopoly = rent * 2         # Rent with monopoly
-        self.rent_building = rent_building    # Building rent
-        self.n_building = 0                   # Number of buildings
-
-
-class Railroad(Property):
-
-    def __init__(self, name, position, price, rent):
-        """Initialize railroad."""
-
-        Property.__init__(self, name, position, price, rent)
-
-        self.rent_double = rent * 2    # Rent with 2 railroads
-        self.rent_triple = rent * 3    # Rent with 3 railroads
-        self.rent_monopoly = rent * 4  # Rent with 4 railroads
-
-
-class Utility(Property):
-
-    def __init__(self, name, position, price, rent):
-        """Initialize utility."""
-
-        Property.__init__(self, name, position, price, rent)
-
-        self.rent_monopoly = rent + 6  # Rent with utility monopoly
-
-
-class Tax(object):
-    """Collect a tax from a player that lands on tihs space."""
-
-    def __init__(self, tax):
-
-        self.tax = tax
-
-
-class Card(object):
-    pass
-
-
-class Chance(object):
-    pass
-
-
-class Chest(object):
-    pass
-
-
-class Jail(object):
-    pass
-
-
-class Idle(object):
-    pass
-
-
-class Switch(object):
-
-    def __init__(self, value):
-
-        self.value = value
-        self.fall = False
-
-    def __iter__(self):
-        """Return the match method once, then stop"""
-
-        yield self.match
-        raise StopIteration
-
-    def match(self, *args):
-
-        """Indicate whether or not to enter a case suite"""
-        if self.fall or not args:
-            return True
-        elif self.value in args:
-            self.fall = True
-            return True
-        else:
-            return False

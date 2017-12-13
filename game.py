@@ -3,6 +3,8 @@ import logging
 import pandas as pd
 
 import bank
+import config
+import dice
 import player
 import spaces
 
@@ -15,11 +17,16 @@ class Game:
 
     def __init__(self):
 
-        self.bank = []
-        self.players = []
-        self.players_remaining = None
-        self.board = []
         self.round = 0
+        self.players = None
+        self.bank = None
+        self.board = None
+        self.dice = None
+        self.players_remaining = None
+
+        self.get_players(config.n_players)
+        self.get_bank()
+        self.get_board(config.board_filename)
 
     def get_players(self, n_players):
         """
@@ -74,8 +81,14 @@ class Game:
             if attributes['class'] in ['Jail', 'Idle']:
                 self.board.append([])
 
+    def pass_dice(self):
+
+        self.dice = dice.Dice()
+
     def update_round(self):
 
         self.round += 1
 
-        logger.info('Starting round {round}...'.format(round=self.round))
+        if config.verbose['round']:
+            logger.info('\n')
+            logger.info('Starting round {round}...'.format(round=self.round))

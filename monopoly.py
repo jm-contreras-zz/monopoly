@@ -1,7 +1,6 @@
 import logging
 import sys
 
-import config
 import dice
 import game
 import spaces
@@ -15,15 +14,6 @@ def main():
     # Initialize game
     g = game.Game()
 
-    # Create list of players
-    g.get_players(config.N_PLAYERS)
-
-    # Create bank
-    g.get_bank()
-
-    # Create board with properties
-    g.get_board(config.BOARD_FILENAME)
-
     # Play as long as more than 1 player remains in game
     while g.players_remaining > 1:
 
@@ -34,7 +24,7 @@ def main():
         for turn_player in g.players:
 
             # Initialize dice
-            d = dice.Dice()
+            g.pass_dice()
 
             # Continue until turn ends
             while True:
@@ -44,21 +34,21 @@ def main():
                     break
 
                 # Roll the dice
-                d.roll()
+                g.dice.roll()
 
                 # If third double, then go to jail and end turn
-                if d.double_counter == 3:
+                if g.dice.double_counter == 3:
                     turn_player.go_to_jail()
                     break
 
                 # Continue if player is in jail
                 if turn_player.jail_turns > 0:
-                    stay_in_jail = turn_player.choose_jail_strategy(rolled_double=d.double)
+                    stay_in_jail = turn_player.choose_jail_strategy(rolled_double=g.dice.double)
                     if stay_in_jail:
                         break
 
                 # Move player
-                turn_player.move(d.roll_sum)
+                turn_player.move(g.dice.roll_sum)
 
                 # Define current board space
                 space = g.board[turn_player.position]
@@ -71,9 +61,15 @@ def main():
                 elif isinstance(space, spaces.Property):
                     turn_player.choose_property_strategy(space)
 
-                # TODO: Write a method that checks for monopolies every time a property is acquired so that you know
-                if len(turn_player.properties) > 0:
-                    turn_player.choose_building_strategy()
+                # If a player owns monopolies
+                if turn_player.owns_monopoly:
+                    #turn_players.buy_buildings()
+
+                # End turn
+                break
+
+        if g.round == 10:
+            break
 
 
 if __name__ == '__main__':

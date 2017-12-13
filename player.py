@@ -1,5 +1,7 @@
-import bank
 import logging
+
+import bank
+import config
 
 
 logger = logging.getLogger(__name__)
@@ -15,9 +17,11 @@ class Player:
         self.id = player_id    # Identification number
         self.cash = 1500       # Cash on hand
         self.properties = []   # List of properties
-        self.position = 1      # Board position
+        self.position = 0      # Board position
         self.jail_cards = 0    # Number of "Get Out Of Jail Free" cards
         self.jail_turns = 0    # Number of remaining turns in jail
+        self.owns_property = False
+        self.owns_monopoly = False
         self.bankrupt = False  # Bankrupt status
 
     def move(self, roll):
@@ -26,14 +30,17 @@ class Player:
         :param int roll: Number of board positions to move
         """
 
+        old_position = self.position
+
         self.position += roll
 
         if self.position >= 40:
             self.position -= 40
             self.cash += 200
 
-        logger.info('Player {id} moved on board from position {old_position} to {new_position}'.format(
-            id=self.id, old_position=self.position - roll, new_position=self.position))
+        if config.verbose['move']:
+            logger.info('Player {id} moved on board from position {old_position} to {new_position}'.format(
+                id=self.id, old_position=old_position, new_position=self.position))
 
     def choose_property_strategy(self, property_):
         """
@@ -66,19 +73,24 @@ class Player:
             self.cash -= payment
             recipient.cash += payment
 
-        logger.info('Player {id} paid ${payment} to {recipient}'.format(
-            id=self.id, payment=payment, recipient=recipient.id))
+        if config.verbose['pay']:
+            logger.info('Player {id} paid ${payment} to {recipient}'.format(
+                id=self.id, payment=payment, recipient=recipient.id))
 
     def buy(self, property_):
         """Buy property from another player or bank."""
         # TODO: Implement option to buy from another player
 
-        self.properties.append(property_.position)
+        self.properties.append(property_)
         self.cash -= property_.price
-        property_.owner = self.id
+        property_.owner = self
 
-        logger.info('Player {id} paid ${price} to buy property {property} from the bank'.format(
-            id=self.id, price=property_.price, property=property_.name))
+        self.owns_property = True
+        self.owns_monopoly = True
+
+        if config.verbose['buy']:
+            logger.info('Player {id} paid ${price} to buy property {property} from the bank'.format(
+                id=self.id, price=property_.price, property=property_.name))
 
     def go_to_jail(self):
         """Send player to jail. Update their position on the board and start the jail turn counter."""

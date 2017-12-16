@@ -1,3 +1,6 @@
+import dice
+
+
 class Space:
     """Generic space object that initializes the two attributes shared by all spaces: Name and position on the board."""
 
@@ -74,9 +77,12 @@ class Utility(Property):
 
         self.rent_monopoly = self.rent + 6
 
-    def get_rent(self, dice_sum):
+    def get_rent(self):
 
-        return self.rent_now * dice_sum
+        d = dice.Dice()
+        d.roll()
+
+        return self.rent_now * d.roll_sum
 
 
 class Tax(Space):

@@ -1,7 +1,6 @@
 import logging
 import sys
 
-import dice
 import game
 import spaces
 
@@ -59,10 +58,10 @@ def main():
 
                 # Choose property strategy
                 elif isinstance(space, spaces.Property):
-                    turn_player.choose_property_strategy(space)
+                    turn_player.visit_property(space)
 
                 # If a player owns monopolies
-                if turn_player.owns_monopoly:
+                #if turn_player.owns_monopoly:
                     #turn_players.buy_buildings()
 
                 # End turn

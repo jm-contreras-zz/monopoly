@@ -20,7 +20,7 @@ class Game:
         self.round = 0
         self.players = None
         self.bank = None
-        self.board = None
+        self.board = []
         self.dice = None
         self.players_remaining = None
 

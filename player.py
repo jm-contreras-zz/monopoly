@@ -42,15 +42,15 @@ class Player:
             logger.info('Player {id} moved on board from position {old_position} to {new_position}'.format(
                 id=self.id, old_position=old_position, new_position=self.position))
 
-    def choose_property_strategy(self, property_):
+    def visit_property(self, property_):
         """
-        Decide what to do when landing on a property. Currently, a player tries to buy the property if it is unowned.
+        Visit a property and act accordingly. Currently, a player always tries to buy the property if it is unowned.
         :param Property property_: Property object
         """
 
         is_owned = property_.owner is not None
         is_unmortgaged = not property_.mortgage
-        can_afford_to_rent = self.cash >= property_.rent_now
+        can_afford_to_rent = self.cash >= property_.get_rent()
         can_afford_to_buy = self.cash >= property_.price
 
         if is_owned and is_unmortgaged:

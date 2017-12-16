@@ -42,6 +42,10 @@ class Street(Property):
         self.rent_hotel = attrib['rent_hotel']        # Rent with hotel
         self.n_buildings = 0                          # Number of buildings
 
+    def get_rent(self):
+
+        return self.rent_now
+
 
 class Railroad(Property):
     """Railroad object that includes attributes related to rent prices per number of railroads owned. Inherits
@@ -55,6 +59,10 @@ class Railroad(Property):
         self.rent_railroad_3 = self.rent * 3  # Rent with 3 railroads
         self.rent_monopoly = self.rent * 4    # Rent with monopoly
 
+    def get_rent(self):
+
+        return self.rent_now
+
 
 class Utility(Property):
     """Utility object that includes attributes related to rent prices in the Utility monopoly. For this monopoly, rents
@@ -65,6 +73,10 @@ class Utility(Property):
         Property.__init__(self, attrib)
 
         self.rent_monopoly = self.rent + 6
+
+    def get_rent(self, dice_sum):
+
+        return self.rent_now * dice_sum
 
 
 class Tax(Space):

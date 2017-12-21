@@ -20,8 +20,6 @@ class Player:
         self.position = 0      # Board position
         self.jail_cards = 0    # Number of "Get Out Of Jail Free" cards
         self.jail_turns = 0    # Number of remaining turns in jail
-        self.owns_property = False
-        self.owns_monopoly = False
         self.bankrupt = False  # Bankrupt status
 
     def move(self, roll):
@@ -50,17 +48,17 @@ class Player:
 
         is_owned = property_.owner is not None
         is_unmortgaged = not property_.mortgage
-        can_afford_to_rent = self.cash >= property_.get_rent()
-        can_afford_to_buy = self.cash >= property_.price
+        can_afford_rent = self.cash >= property_.get_rent()
+        can_afford_purchase = self.cash >= property_.price
 
         if is_owned and is_unmortgaged:
-            if can_afford_to_rent:
+            if can_afford_rent:
                 self.pay(payment=property_.rent_now, recipient=property_.owner)
             else:
                 self.go_bankrupt(creditor=property_.owner)
 
-        elif not is_owned and can_afford_to_buy:
-            self.buy(property_)
+        elif not is_owned and can_afford_purchase:
+            self.buy_property(property_)
 
     def pay(self, payment, recipient):
         """
@@ -77,7 +75,7 @@ class Player:
             logger.info('Player {id} paid ${payment} to {recipient}'.format(
                 id=self.id, payment=payment, recipient=recipient.id))
 
-    def buy(self, property_):
+    def buy_property(self, property_):
         """Buy property from another player or bank."""
         # TODO: Implement option to buy from another player
 
@@ -85,12 +83,19 @@ class Player:
         self.cash -= property_.price
         property_.owner = self
 
-        self.owns_property = True
-        self.owns_monopoly = True
+        self.count_monopolies()
 
         if config.verbose['buy']:
             logger.info('Player {id} paid ${price} to buy property {property} from the bank'.format(
                 id=self.id, price=property_.price, property=property_.name))
+
+    def count_monopolies(self):
+        self.properties
+
+    def buy_building(self):
+        """Buy any building that can be legally bought."""
+        for m in self.monopolies:
+
 
     def go_to_jail(self):
         """Send player to jail. Update their position on the board and start the jail turn counter."""

@@ -61,8 +61,8 @@ def main():
                     turn_player.visit_property(space)
 
                 # If a player owns monopolies
-                #if turn_player.owns_monopoly:
-                    #turn_players.buy_buildings()
+                if turn_player.owns_monopoly:
+                    turn_player.buy_building()
 
                 # End turn
                 break
